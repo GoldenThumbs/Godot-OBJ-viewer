@@ -10,17 +10,18 @@ config_version=4
 
 _global_script_classes=[  ]
 _global_script_class_icons={
-
 }
 
 [application]
 
 config/name="Retro Model Viewer"
-run/main_scene="res://DATA/MISC/Main.tscn"
-boot_splash/image="res://DATA/TEXTURE/Splash_New.png"
+run/main_scene="res://data/misc/Main.tscn"
 boot_splash/fullsize=false
 boot_splash/bg_color=Color( 0, 0.215686, 0.215686, 1 )
-config/icon="res://DATA/TEXTURE/RMV_LOGO_ICON_GD.png"
+
+[autoload]
+
+MdlManager="*res://src/mdl_manager.gd"
 
 [debug]
 
@@ -34,7 +35,6 @@ window/vsync/use_vsync=false
 [importer_defaults]
 
 image={
-
 }
 
 [input]
@@ -67,7 +67,6 @@ light={
 
 [rendering]
 
-quality/filters/anisotropic_filter_level=1
 quality/directional_shadow/size.mobile=256
 quality/shadow_atlas/size=2048
 quality/shadow_atlas/size.mobile=256
@@ -79,6 +78,7 @@ quality/reflections/texture_array_reflections=false
 quality/reflections/high_quality_ggx=false
 quality/shading/force_lambert_over_burley=true
 quality/shading/force_blinn_over_ggx=true
+quality/filters/anisotropic_filter_level=1
 quality/filters/use_nearest_mipmap_filter=true
 quality/subsurface_scattering/quality=0
-environment/default_environment="res://DATA/MISC/default_env.tres"
+environment/default_environment="res://data/misc/Environment.tres"
