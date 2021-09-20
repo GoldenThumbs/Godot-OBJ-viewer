@@ -1,9 +1,13 @@
 extends Node
 
-func load_mdl(path) -> Mesh:
+func load_mdl(path: String) -> Mesh:
 	if path == null:
 		return null
-	return _import_obj(path)
+	if path.get_extension() == "obj" || path.get_extension() == "OBJ":
+		return _import_obj(path)
+	else:
+		print("Unknown or Unsupported Extension")
+		return null
 
 func count_char(string: String, txt: String) -> int:
 	var num : int = 0
@@ -12,21 +16,22 @@ func count_char(string: String, txt: String) -> int:
 			num += 1
 	return num
 
-func _import_obj(path) -> Mesh:
-	var st = SurfaceTool.new()
+func _import_obj(path: String) -> Mesh:
+	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var mdlFile = File.new()
-	var errCheck = mdlFile.open(path, File.READ)
-	if errCheck != OK:
+	var mdlFile := File.new()
+	var errorCheck = mdlFile.open(path, File.READ)
+	if errorCheck != OK:
 		print("cannot open file at path[", path,"]")
+		return null
 	
-	var mdlVerts = []
-	var mdlNorm = []
-	var mdlUV = []
+	var mdlVerts := []
+	var mdlNorm := []
+	var mdlUV := []
 	
-	var mdlFaceIndex = []
-	var mdlUVIndex = []
-	var mdlNormIndex = []
+	var mdlFaceIndex := []
+	var mdlUVIndex := []
+	var mdlNormIndex := []
 	
 	while !mdlFile.eof_reached():
 		var mdlData = mdlFile.get_line()
@@ -134,11 +139,12 @@ func _import_obj(path) -> Mesh:
 			else:
 				print("MODEL NOT VALID!")
 		elif mdlData.begins_with("s "):
-			var smooth = mdlData.substr(2, mdlData.length()).strip_edges()
+			var smooth : String = mdlData.substr(2, mdlData.length()).strip_edges()
 			if smooth == "off":
 				st.add_smooth_group(false)
 			else:
 				st.add_smooth_group(true)
+	
 	for i in mdlFaceIndex.size():
 		if mdlUV.size() > 0:
 			st.add_uv(mdlUV[mdlUVIndex[i][0]])
@@ -163,5 +169,7 @@ func _import_obj(path) -> Mesh:
 		st.generate_tangents()
 	var mdl = Mesh.new()
 	mdl = st.commit()
+	
+	mdlFile.close()
 	
 	return mdl
