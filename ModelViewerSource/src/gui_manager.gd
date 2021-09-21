@@ -18,18 +18,18 @@ func _on_Toolbar_Toggle_toggled(button_pressed: bool) -> void:
 
 func _toggle_toolbar(toggle: bool) -> void:
 	if toolbar_hidden == toggle:
-		toolbar_tween.stop(toolbar_body)
+		var _start = toolbar_tween.stop(toolbar_body)
 		toolbar_hidden = !toggle
 		if toggle:
 			print("Sliding In!")
 			var _x := toolbar_body.rect_position.x
-			toolbar_tween.interpolate_property(toolbar_body, "rect_position:x", _x, 0, .3, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT)
+			var _tween = toolbar_tween.interpolate_property(toolbar_body, "rect_position:x", _x, 0, .3, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT)
 		else:
 			print("Sliding Out!")
 			var _x := toolbar_body.rect_position.x
 			var _2x := -toolbar_body.get_size().x
-			toolbar_tween.interpolate_property(toolbar_body, "rect_position:x", _x, _2x, .3, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT)
-		toolbar_tween.start()
+			var _tween = toolbar_tween.interpolate_property(toolbar_body, "rect_position:x", _x, _2x, .3, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT)
+		var _stop = toolbar_tween.start()
 
 func _on_ImportMesh_button_up() -> void:
 	model_dialog.popup()

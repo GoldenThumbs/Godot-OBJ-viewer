@@ -7,6 +7,8 @@ var _model_skin : Texture = null
 onready var gui : Control = get_node("../GUI")
 onready var mat : Material = SpatialMaterial.new()
 
+const MAX_DIST = 5.0
+
 func _ready() -> void:
 	mat.params_specular_mode = SpatialMaterial.SPECULAR_DISABLED
 	self.material_override = mat
@@ -21,13 +23,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		if event is InputEventMouseMotion:
-			self.rotation_degrees += Vector3(event.relative.y * turn_speed, event.relative.x * turn_speed, 0.0)
+			var rot_basis_x := Basis(Vector3(1, 0, 0), deg2rad(event.relative.y * turn_speed))
+			var rot_basis_y := Basis(Vector3(0, 1, 0), deg2rad(event.relative.x * turn_speed))
+			self.global_transform.basis = rot_basis_x * rot_basis_y * self.global_transform.basis
 	else:
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if Input.is_mouse_button_pressed(BUTTON_RIGHT):
 		if event is InputEventMouseMotion:
-			self.rotate_z(deg2rad(event.relative.y * turn_speed))
+			self.global_translate(Vector3(event.relative.x * 0.01, -event.relative.y * 0.01, 0.0))
+			self.translation.x = clamp(self.translation.x, -MAX_DIST, MAX_DIST)
 
 func scale_by_float(amnt: float) -> void:
 	amnt = max(abs(amnt), 0.01)
