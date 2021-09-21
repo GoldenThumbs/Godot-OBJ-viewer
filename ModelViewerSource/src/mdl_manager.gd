@@ -64,8 +64,18 @@ func count_char(string: String, txt: String) -> int:
 #func _magic(input: String) -> int: #Shhhhh, for a future format
 #	return ((ord(input[3]) << 24) + (ord(input[2]) << 16) + (ord(input[1]) << 8)) + ord(input[0])
 
+func _obj_rel_indice(indice : Vector3, cur_vArr_size : int) -> Vector3:
+	var output := Vector3.ZERO
+	var indSign := indice.sign()
+	output.x = indice.x - 1 if (indSign.x >= 0) else cur_vArr_size + indice.x
+	output.y = indice.y - 1 if (indSign.y >= 0) else cur_vArr_size + indice.y
+	output.z = indice.z - 1 if (indSign.z >= 0) else cur_vArr_size + indice.z
+	
+	return output
+
 func _import_obj(mdlFile : File) -> TriMesh:
 	var newMsh := TriMesh.new()
+	
 	while !mdlFile.eof_reached():
 		var mdlData := mdlFile.get_line()
 		var f2c = mdlData.substr(0, 2)
@@ -98,27 +108,33 @@ func _import_obj(mdlFile : File) -> TriMesh:
 				for i in lineData.size() - 1:
 					misc.push_back(lineData[i + 1].split("/"))
 				for i in misc.size() - 2:
-					var intVar = i + 2
-					var num = misc[intVar].size()
+					var intVar : int = i + 2
+					var num : int = misc[intVar].size()
+					var vArr_size : int = newMsh.vertices.size()
+					var tArr_size : int = newMsh.uvs.size()
+					var nArr_size : int = newMsh.normals.size()
 					
 					var faceIndices = Vector3(
-					int(misc[intVar][0]) - 1,
-					int(misc[intVar-1][0]) - 1,
-					int(misc[0][0]) - 1)
+					int(misc[intVar][0]),
+					int(misc[intVar-1][0]),
+					int(misc[0][0]))
+					faceIndices = _obj_rel_indice(faceIndices, vArr_size)
 					
 					var uvIndices : Vector3
 					if num >= 2:
 						uvIndices = Vector3(
-						int(misc[intVar][1]) - 1,
-						int(misc[intVar-1][1]) - 1,
-						int(misc[0][1]) - 1)
+						int(misc[intVar][1]),
+						int(misc[intVar-1][1]),
+						int(misc[0][1]))
+					uvIndices = _obj_rel_indice(uvIndices, tArr_size)
 					
 					var normIndices : Vector3
 					if num == 3:
 						normIndices = Vector3(
-						int(misc[intVar][2]) - 1,
-						int(misc[intVar-1][2]) - 1,
-						int(misc[0][2]) - 1)
+						int(misc[intVar][2]),
+						int(misc[intVar-1][2]),
+						int(misc[0][2]))
+					normIndices = _obj_rel_indice(normIndices, nArr_size)
 					
 					var triangle := Triangle.new()
 					
